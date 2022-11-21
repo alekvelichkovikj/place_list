@@ -4,7 +4,12 @@ import 'package:place_list_app/screens/add_place_screen.dart';
 import 'package:place_list_app/screens/places_list_screen.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+import 'package:flutter_config/flutter_config.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Required by FlutterConfig
+  await FlutterConfig.loadEnvVariables();
+
   runApp(const MyApp());
 }
 

@@ -12,13 +12,13 @@ class PlaceLocation {
 class Place {
   final String id;
   final String title;
-  final PlaceLocation location;
+  // final PlaceLocation location;
   final File image;
 
   const Place({
     required this.id,
     required this.image,
-    required this.location,
+    // required this.location,
     required this.title,
   });
 }

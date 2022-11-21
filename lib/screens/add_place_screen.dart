@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:place_list_app/providers/great_places.dart';
 import 'package:place_list_app/widgets/image_input.dart';
+import 'package:place_list_app/widgets/location_input.dart';
+import 'package:provider/provider.dart';
 
 class AddPlaceScreen extends StatefulWidget {
   static const routeName = '/add-place';
@@ -12,6 +17,20 @@ class AddPlaceScreen extends StatefulWidget {
 
 class _AddPlaceScreenState extends State<AddPlaceScreen> {
   final _titleController = TextEditingController();
+  File? _pickedImage;
+
+  void _selectImage(File pickedImage) {
+    _pickedImage = pickedImage;
+  }
+
+  void _savePLace() {
+    if (_titleController.text.isEmpty || _pickedImage == null) {
+      return;
+    }
+    Provider.of<GreatPlaces>(context, listen: false)
+        .addPlace(_titleController.text, _pickedImage!);
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,25 +54,34 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                     const SizedBox(
                       height: 10,
                     ),
-                    const ImageInput(),
+                    ImageInput(_selectImage),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const LocationInput(),
                   ],
                 ),
               ),
             ),
           ),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(0),
+          Padding(
+            padding: Platform.isIOS
+                ? const EdgeInsets.only(bottom: 10)
+                : const EdgeInsets.all(0),
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                ),
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                foregroundColor: Colors.black87,
+                elevation: 0,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              foregroundColor: Colors.black87,
-              elevation: 0,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              onPressed: _savePLace,
+              icon: const Icon(Icons.add),
+              label: const Text('Add place'),
             ),
-            onPressed: () {},
-            icon: const Icon(Icons.add),
-            label: const Text('Add place'),
           ),
         ],
       ),
