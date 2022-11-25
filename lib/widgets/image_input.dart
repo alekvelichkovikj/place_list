@@ -7,18 +7,18 @@ import 'package:image_picker/image_picker.dart';
 class ImageInput extends StatefulWidget {
   final Function onSelectImage;
 
-  const ImageInput(this.onSelectImage, {super.key});
+  const ImageInput({Key key, this.onSelectImage}) : super(key: key);
 
   @override
   State<ImageInput> createState() => _ImageInputState();
 }
 
 class _ImageInputState extends State<ImageInput> {
-  File? _storedImage;
+  File _storedImage;
 
   Future<void> _takePhoto() async {
     final imagePicker = ImagePicker();
-    XFile? pickedImage = await imagePicker.pickImage(
+    XFile pickedImage = await imagePicker.pickImage(
       source: ImageSource.camera,
       maxWidth: 600,
     );
@@ -48,7 +48,7 @@ class _ImageInputState extends State<ImageInput> {
           alignment: Alignment.center,
           child: _storedImage != null
               ? Image.file(
-                  _storedImage!,
+                  _storedImage,
                   fit: BoxFit.cover,
                   width: double.infinity,
                 )

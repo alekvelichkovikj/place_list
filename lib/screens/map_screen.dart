@@ -4,23 +4,23 @@ import 'package:place_list_app/models/place.dart';
 
 class MapScreen extends StatefulWidget {
   final PlaceLocation initialLocation;
-  final bool? isSelecting;
+  final bool isSelecting;
 
   const MapScreen({
-    super.key,
+    Key key,
     this.initialLocation = const PlaceLocation(
       latitude: 37.3064,
       longitude: -122.0318,
     ),
     this.isSelecting = false,
-  });
+  }) : super(key: key);
 
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
 
 class _MapScreenState extends State<MapScreen> {
-  LatLng? _pickedLocation;
+  LatLng _pickedLocation;
 
   void _selectlocation(LatLng position) {
     setState(() {
@@ -33,17 +33,19 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Map'),
+        actions: [
+          if (widget.isSelecting)
+            IconButton(
+              onPressed: _pickedLocation == null
+                  ? null
+                  : () {
+                      Navigator.of(context).pop(_pickedLocation);
+                    },
+              icon: const Icon(Icons.check),
+            ),
+        ],
       ),
       body: GoogleMap(
-        onTap: widget.isSelecting! ? _selectlocation : null,
-        markers: _pickedLocation == null
-            ? {}
-            : {
-                Marker(
-                  markerId: const MarkerId('m1'),
-                  position: _pickedLocation!,
-                )
-              },
         initialCameraPosition: CameraPosition(
           target: LatLng(
             widget.initialLocation.latitude,
@@ -51,6 +53,19 @@ class _MapScreenState extends State<MapScreen> {
           ),
           zoom: 16,
         ),
+        onTap: widget.isSelecting ? _selectlocation : null,
+        markers: (_pickedLocation == null && widget.isSelecting)
+            ? {}
+            : {
+                Marker(
+                  markerId: const MarkerId('m1'),
+                  position: _pickedLocation ??
+                      LatLng(
+                        widget.initialLocation.latitude,
+                        widget.initialLocation.longitude,
+                      ),
+                ),
+              },
       ),
     );
   }

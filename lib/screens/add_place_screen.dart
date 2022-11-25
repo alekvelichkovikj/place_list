@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:place_list_app/models/place.dart';
 import 'package:place_list_app/providers/great_places.dart';
 import 'package:place_list_app/widgets/image_input.dart';
 import 'package:place_list_app/widgets/location_input.dart';
@@ -9,7 +10,9 @@ import 'package:provider/provider.dart';
 class AddPlaceScreen extends StatefulWidget {
   static const routeName = '/add-place';
 
-  const AddPlaceScreen({super.key});
+  const AddPlaceScreen({Key key}) : super(key: key);
+
+  // const AddPlaceScreen({super.key});
 
   @override
   State<AddPlaceScreen> createState() => _AddPlaceScreenState();
@@ -17,18 +20,25 @@ class AddPlaceScreen extends StatefulWidget {
 
 class _AddPlaceScreenState extends State<AddPlaceScreen> {
   final _titleController = TextEditingController();
-  File? _pickedImage;
+  File _pickedImage;
+  PlaceLocation _pickedLocation;
 
   void _selectImage(File pickedImage) {
     _pickedImage = pickedImage;
   }
 
+  void _selectPlace(double lat, double lng) {
+    _pickedLocation = PlaceLocation(latitude: lat, longitude: lng);
+  }
+
   void _savePLace() {
-    if (_titleController.text.isEmpty || _pickedImage == null) {
+    if (_titleController.text.isEmpty ||
+        _pickedImage == null ||
+        _pickedLocation == null) {
       return;
     }
     Provider.of<GreatPlaces>(context, listen: false)
-        .addPlace(_titleController.text, _pickedImage!);
+        .addPlace(_titleController.text, _pickedImage, _pickedLocation);
     Navigator.of(context).pop();
   }
 
@@ -54,11 +64,11 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                     const SizedBox(
                       height: 10,
                     ),
-                    ImageInput(_selectImage),
+                    ImageInput(onSelectImage: _selectImage),
                     const SizedBox(
                       height: 10,
                     ),
-                    const LocationInput(),
+                    LocationInput(selectPlace: _selectPlace),
                   ],
                 ),
               ),

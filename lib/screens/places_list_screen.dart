@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:place_list_app/providers/great_places.dart';
 import 'package:place_list_app/screens/add_place_screen.dart';
+import 'package:place_list_app/screens/place_detail_screen.dart';
 import 'package:provider/provider.dart';
 
-class PlacesListScreen extends StatelessWidget {
-  const PlacesListScreen({super.key});
+class PlacesListScreen extends StatefulWidget {
+  const PlacesListScreen({Key key}) : super(key: key);
 
+  @override
+  State<PlacesListScreen> createState() => _PlacesListScreenState();
+}
+
+class _PlacesListScreenState extends State<PlacesListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,14 +31,16 @@ class PlacesListScreen extends StatelessWidget {
             .fetchAndSetPlaces(),
         builder: (context, snapshot) => snapshot.connectionState ==
                 ConnectionState.waiting
-            ? const CircularProgressIndicator()
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
             : Consumer<GreatPlaces>(
                 child: const Center(
                   child: Text('Got no places yet, start adding some!'),
                 ),
                 builder: (context, greatPlaces, child) => greatPlaces
                         .items.isEmpty
-                    ? child!
+                    ? child
                     : ListView.builder(
                         itemCount: greatPlaces.items.length,
                         itemBuilder: (BuildContext context, int index) => Card(
@@ -48,6 +56,8 @@ class PlacesListScreen extends StatelessWidget {
                               ),
                             ),
                             title: Text(greatPlaces.items[index].title),
+                            subtitle:
+                                Text(greatPlaces.items[index].location.address),
                             trailing: IconButton(
                               icon: Icon(
                                 Icons.delete_outline,
@@ -56,10 +66,14 @@ class PlacesListScreen extends StatelessWidget {
                               onPressed: () {
                                 Provider.of<GreatPlaces>(context, listen: false)
                                     .deletePLace(greatPlaces.items[index].id);
+                                setState(() {});
                               },
                             ),
                             onTap: () {
-                              // go to detail page
+                              Navigator.of(context).pushNamed(
+                                PlaceDetailScreen.routeName,
+                                arguments: greatPlaces.items[index].id,
+                              );
                             },
                           ),
                         ),
